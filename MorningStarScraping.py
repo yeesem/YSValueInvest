@@ -7,7 +7,7 @@ chrome_options.add_argument('--incognito')
 browser = webdriver.Chrome(service = cService,options = chrome_options)
 browser.get("https://www.morningstar.com/stocks/xkls/5196/Valuation")
 
-time.sleep(3)
+time.sleep(2)
 
-print(browser.page_source)
-
+element = browser.find_element("class","sal-component-title-h2")
+print(element)
