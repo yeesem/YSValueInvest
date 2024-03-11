@@ -9,6 +9,5 @@ test = klse.scrap_stock_web_page()
 test2 = klse.get_stock_basic_info()
 
 print(test2["price"])
-print(test2["company summary"])
 
 print(klse.get_quarter_financial_data())
