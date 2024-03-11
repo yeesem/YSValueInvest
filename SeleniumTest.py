@@ -29,7 +29,7 @@ WebDriverWait(browser,5).until(
 #will return an array of all different elements
 link = browser.find_element(By.PARTIAL_LINK_TEXT,"Tech With Tim")
 link.click()
-print("Test")
+
 time.sleep(2)
 
 browser.quit()
