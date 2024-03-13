@@ -6,6 +6,7 @@ import datetime
 import matplotlib.pyplot as plt
 from streamlit_option_menu import option_menu
 from IncomeStatement import Income_Statement
+from dateutil.relativedelta import relativedelta
 from KLSEScraping import KLSE
 
 
@@ -37,9 +38,11 @@ symbol = stock_basic_info["symbol"]
 price = stock_basic_info["price"]
 percentage_difference = stock_basic_info["different price in percentage"]
 full_name = stock_basic_info["full name"]
+company_sector = stock_basic_info["company sector"]
+company_website = stock_basic_info["company link"]
 
 # Define the space between elements
-space = "&nbsp;" * 10
+space = "&nbsp;"
 
 ###MAIN PAGE
 if menu == 'Main Page':
@@ -50,8 +53,9 @@ if menu == 'Main Page':
       st.sidebar.write("Date Range Selection")
       current_date =  datetime.datetime.now().date()
       start_date = current_date - datetime.timedelta(days = 10 * 365)
-      start = st.sidebar.slider("Start Date",start_date,current_date)
-      end = st.sidebar.slider("End Date",start_date,current_date)
+      initial_default_date = current_date - datetime.timedelta(days = 5 * 365)
+      start = st.sidebar.slider("Start Date",start_date,current_date,value = initial_default_date)
+      end = st.sidebar.slider("End Date",start_date,current_date,value = current_date)
     
       chartDate = {"Start Date":start,"End Date":end}
     
@@ -68,14 +72,21 @@ if menu == 'Main Page':
   color = "green" if float(percentage_difference.strip('%')) > 0 else "red"
 
   st.write(f'<div style="{flex_style}; font-size: 35px;">'
-         f'<span style="font-weight: bold;">{short_name} {symbol}</span>'
+         f'<span style="font-weight: bold;">'
+         f'<a href = "{company_website}">{short_name} {symbol}</a>''</span>'
          f'<div style="text-align: right; font-size: 30px; color: {color};">'
          f'<span style="font-weight: bold;">{price} ({percentage_difference})</span>'
          f'</div></div>',
          unsafe_allow_html=True)
-
-  st.write("### " + full_name)
-
+  
+  st.write(
+    f'<div style="margin-bottom: 5px;">'
+    f'<span style="font-weight: bold; font-size: 25px;">{full_name}</span>'
+    f'<br>'
+    f'<span style="font-weight: bold; font-size: 20px;">{company_sector}</span>'
+    f'</div>',
+    unsafe_allow_html=True)
+  
   st.markdown(stock_basic_info["company summary"])
 
 
