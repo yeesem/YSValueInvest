@@ -1,9 +1,14 @@
 import yfinance as yf
 import streamlit as st
+
 import pandas as pd
 import numpy as np
 import datetime
+
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
+
 from streamlit_option_menu import option_menu
 from IncomeStatement import Income_Statement
 from dateutil.relativedelta import relativedelta
@@ -15,7 +20,7 @@ st.sidebar.header("Menu")
 def menu():
       
       menu_option = st.sidebar.radio('Pages',
-                               options = ["Main Page","Income Statement","Balance Sheet","Cash Flow"])
+                               options = ["Main Page","Income Statement","Balance Sheet","Cash Flow","Shareholding Changes","Capital Changes"])
     
       return menu_option
 
@@ -40,6 +45,12 @@ percentage_difference = stock_basic_info["different price in percentage"]
 full_name = stock_basic_info["full name"]
 company_sector = stock_basic_info["company sector"]
 company_website = stock_basic_info["company link"]
+
+shareholding_changes_table = klse.shareholding_changes_table()
+
+capital_changes_table = klse.capital_changes_table()
+
+annual_financial_data = klse.get_annual_financial_data()
 
 # Define the space between elements
 space = "&nbsp;"
@@ -88,9 +99,40 @@ if menu == 'Main Page':
     unsafe_allow_html=True)
   
   st.markdown(stock_basic_info["company summary"])
+  st.write("\n")
+  
+  ## MAIN MANU - PLOT ANNUAL FINANCIAL DATA
+  annual_data = annual_financial_data
+  annual_data.index = annual_data.index.astype(str)
+  
+     
+  ### MAIN MENU - ANNUAL FINANCIAL DATA
+  st.write(
+    f'<div style="margin-bottom: 5px;">'
+    f'<span style="font-weight: bold; font-size: 20px;">{"Annual Financial Data"}</span>'
+    f'</div>',
+    unsafe_allow_html=True)
 
+  annual_data = annual_data[-10:]
+  annual_data = annual_data.T[:-2]
+  fig = go.Figure(data=go.Table(
+  header=dict(values= [""] + list( annual_data.columns),
+              fill_color="#D7DBDD",
+              align='center'),
+  cells=dict(values=[annual_data.index] + [annual_data[col] for col in annual_data],
+              fill_color="#F4F6F6",
+              align="left",
+              height = 40,
+              )))
 
-  st.write("#### Technical Chart - ",stockName)
+  fig.update_layout(margin = dict(l=0,r=0,b=0,t=2),
+                  ) 
+  
+  # Show the Plotly figure using st.write()
+  st.write(fig)
+
+  # MAIN MENU - Technical Chart
+  st.write("#### Technical Chart - ", stockName)
   st.line_chart(historyPriceData.Close)
 
   st.session_state.ticker = ticker
@@ -107,6 +149,7 @@ if menu == 'Income Statement':
    st.write(st.session_state.IncomeStatement.ShowIncomeStatement())
 
 
+   
 
 ###BALANCE SHEET PAGE
 if menu == 'Balance Sheet': 
@@ -117,3 +160,49 @@ if menu == 'Balance Sheet':
 ###CASH FLOW PAGE
 if menu == 'Cash Flow':
    st.write("### Cash Flow")
+   
+   
+###SHAREHOLDING CHANGE PAGE
+if menu == 'Shareholding Changes':
+  st.write("### Shareholding Changes")
+  
+  shareholding_changes_table.insert(0, 'Index', range(1, len(shareholding_changes_table) + 1))
+  
+  fig = go.Figure(data=go.Table(
+    header=dict(values=list(shareholding_changes_table.columns),
+                fill_color="#D7DBDD",
+                align='center'),
+    cells=dict(values=[shareholding_changes_table[col] for col in shareholding_changes_table],
+               fill_color="#F4F6F6",
+               align="left",
+               )))
+  
+  fig.update_layout(margin = dict(l=0,r=0,b=30,t=10),
+                    height = 600,
+                    ) 
+  
+  #Showing the graph
+  st.plotly_chart(fig)
+
+###CAPITAL CHANGE PAGE
+if menu == 'Capital Changes':
+  st.write("### Capital Changes")
+  
+  capital_changes_table.insert(0, 'Index', range(1, len(capital_changes_table) + 1))
+  
+  fig = go.Figure(data=go.Table(
+    header=dict(values=list(capital_changes_table.columns),
+                fill_color="#D7DBDD",
+                align='center'),
+    cells=dict(values=[capital_changes_table[col] for col in capital_changes_table],
+               fill_color="#F4F6F6",
+               align="left",
+               height = 50
+               )))
+  
+  fig.update_layout(margin = dict(l=0,r=0,b=30,t=10),
+                    height = 600,
+                    ) 
+  
+  st.plotly_chart(fig)
+  
