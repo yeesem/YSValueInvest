@@ -129,7 +129,7 @@ class KLSE:
     
     def get_annual_financial_data(self):
         table  = self.get_tables_html()[0]
-
+        
         #Get Annual Report Link
         annual_report_list = table.find_all('a')
 
@@ -141,6 +141,7 @@ class KLSE:
 
         #Call get_dividend_table()
         dividend_table = self.get_dividend_table()
+        
         dividend_summary = pd.DataFrame({
             'Financial Year': dividend_table['Financial Year'],
             'Amount': dividend_table['Amount']
@@ -152,7 +153,7 @@ class KLSE:
         dividend_summary.index = pd.to_datetime(dividend_summary.index)
         dividend_summary = dividend_summary.sort_index()
       
-        #
+    
         incompleted_titles = table.find_all('th')[0:10]
         titles = [title.text for title in incompleted_titles]
         incompleted_title = table.find_all('th')
@@ -202,7 +203,8 @@ class KLSE:
 
         df.index = pd.to_datetime(df.index)
         df = df.sort_index()
-
+        
+        ### ERROR
         df = pd.merge(df, dividend_summary, left_index=True, right_index=True)
         df = df.rename(columns = {'Amount' : 'Total Dividend Paid'})
 
@@ -215,7 +217,6 @@ class KLSE:
     
     def get_dividend_table(self):
         dividend_table = self.get_tables_html()[1]
-
         dividend_table_title = [item.text for item in dividend_table.find_all("th")]
 
         dividend_table_row = [item.text.strip() for item in dividend_table.find_all("tr")]
@@ -230,10 +231,9 @@ class KLSE:
           if len(temp) == 1:
             continue
           else:
-            temp = [x.strip() for x in temp if x.strip() not in ['','\n\n','\n','Currency','View',"RM"]]
+            temp = [x.strip() for x in temp if x.strip() not in ['','\n\n','\n','Currency','Percentage','View',"RM"]]
             dividend_table_data.append(temp)
 
-        dividend_table_data = [item[:6] for item in dividend_table_data if len(item) > 6]
         dividend_table = pd.DataFrame(dividend_table_data,columns = dividend_table_title[:6])
       
         return dividend_table

@@ -140,12 +140,11 @@ if menu == 'Main Page':
       Graph.plot_annual_financial_graph(annual_data,'EPS',-5)
       
   ### MAIN MENU - ANNUAL FINANCIAL DATA
-
   annual_data = annual_data[-10:]
   annual_data = annual_data.T[:-2]
   
   fig = go.Figure(data=go.Table(
-  header=dict(values= [""] + list( annual_data.columns),
+  header=dict(values= [""] + list(annual_data.columns),
               fill_color="#D7DBDD",
               align='center'),
   cells=dict(values=[annual_data.index] + [annual_data[col] for col in annual_data],
