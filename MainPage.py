@@ -8,6 +8,14 @@ import datetime
 import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
+from matplotlib.widgets import RectangleSelector
+import mplcursors
+
+import dash
+from dash import Dash, html, Input, Output, dash_table
+from dash.dependencies import Input,Output
+import dash_core_components as dcc
+import dash_html_components as html
 
 from streamlit_option_menu import option_menu
 from IncomeStatement import Income_Statement
@@ -46,7 +54,10 @@ full_name = stock_basic_info["full name"]
 company_sector = stock_basic_info["company sector"]
 company_website = stock_basic_info["company link"]
 
-shareholding_changes_table = klse.shareholding_changes_table()
+@st.cache_data
+def shareholding_changes_table():
+    shareholding_changes_table = klse.shareholding_changes_table()
+    return shareholding_changes_table
 
 capital_changes_table = klse.capital_changes_table()
 
@@ -99,19 +110,34 @@ if menu == 'Main Page':
     unsafe_allow_html=True)
   
   st.markdown(stock_basic_info["company summary"])
-  st.write("\n")
+  #st.write("\n")
   
   ## MAIN MANU - PLOT ANNUAL FINANCIAL DATA
+  st.write(
+  f'<div style="margin-bottom: 5px;">'
+  f'<span style="font-weight: bold; font-size: 20px;">{"Annual Financial Data"}</span>'
+  f'</div>',
+  unsafe_allow_html=True)
+    
   annual_data = annual_financial_data
   annual_data.index = annual_data.index.astype(str)
   
-     
+  annual_data["EPS"] = annual_data["EPS"].astype(float)
+  
+  fig, ax = plt.subplots(figsize=(25, 8))
+  annual_data["EPS"].plot(ax=ax, color='brown')
+  plt.xticks(rotation=45)
+  plt.ylabel("EPS")
+  ax.set_xticks(range(len(annual_data)))
+  ax.set_xticklabels(annual_data.index)
+  # Annotate each point with its corresponding y-value
+  for x, y in zip(range(len(annual_data)), annual_data["EPS"]):
+      plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
+
+  # Show plot using Streamlit
+  st.pyplot(fig)
+      
   ### MAIN MENU - ANNUAL FINANCIAL DATA
-  st.write(
-    f'<div style="margin-bottom: 5px;">'
-    f'<span style="font-weight: bold; font-size: 20px;">{"Annual Financial Data"}</span>'
-    f'</div>',
-    unsafe_allow_html=True)
 
   annual_data = annual_data[-10:]
   annual_data = annual_data.T[:-2]
@@ -126,7 +152,7 @@ if menu == 'Main Page':
               )))
 
   fig.update_layout(margin = dict(l=0,r=0,b=0,t=2),
-                  ) 
+                    height = 250) 
   
   # Show the Plotly figure using st.write()
   st.write(fig)
@@ -165,6 +191,8 @@ if menu == 'Cash Flow':
 ###SHAREHOLDING CHANGE PAGE
 if menu == 'Shareholding Changes':
   st.write("### Shareholding Changes")
+  
+  shareholding_changes_table = shareholding_changes_table()
   
   shareholding_changes_table.insert(0, 'Index', range(1, len(shareholding_changes_table) + 1))
   
