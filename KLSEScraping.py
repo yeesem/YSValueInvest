@@ -192,6 +192,7 @@ class KLSE:
         NetInc.reverse()
         df["Net Profit Y-o-Y Growth %"] = NetInc
 
+        df['DP %'] = df['DP %'].replace("-","0")
         df['DP %'] = df['DP %'].astype(float)
 
         while len(df['Revenue']) != len(annual_report_link):
@@ -232,6 +233,7 @@ class KLSE:
             temp = [x.strip() for x in temp if x.strip() not in ['','\n\n','\n','Currency','View',"RM"]]
             dividend_table_data.append(temp)
 
+        dividend_table_data = [item[:6] for item in dividend_table_data if len(item) > 6]
         dividend_table = pd.DataFrame(dividend_table_data,columns = dividend_table_title[:6])
       
         return dividend_table

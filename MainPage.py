@@ -21,6 +21,7 @@ from streamlit_option_menu import option_menu
 from IncomeStatement import Income_Statement
 from dateutil.relativedelta import relativedelta
 from KLSEScraping import KLSE
+from GraphMethod import Graph
 
 ###SIDEBAR
 st.sidebar.header("Menu")
@@ -130,59 +131,19 @@ if menu == 'Main Page':
   )
   
   if annual_graph_option == "All": 
-      annual_data["EPS"] = annual_data["EPS"].astype(float)
-      
-      fig, ax = plt.subplots(figsize=(30, 10))
-      annual_data["EPS"].plot(ax=ax, color='brown')
-      plt.xticks(rotation=45)
-      plt.ylabel("EPS")
-      ax.set_xticks(range(len(annual_data)))
-      ax.set_xticklabels(annual_data.index)
-      # Annotate each point with its corresponding y-value
-      for x, y in zip(range(len(annual_data)), annual_data["EPS"]):
-          plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
-
-      # Show plot using Streamlit
-      st.pyplot(fig)
+      Graph.plot_annual_financial_graph(annual_data,'EPS',0)
   
   elif annual_graph_option == "10Y":
-      annual_data["EPS"] = annual_data["EPS"].astype(float)
-      
-      fig, ax = plt.subplots(figsize=(30, 10))
-      annual_data["EPS"][-10:].plot(ax=ax, color='brown')
-      plt.xticks(rotation=45,fontsize=17)
-      plt.ylabel("EPS",fontsize=20)
-      plt.xlabel("Finacial Year",fontsize = 20)
-      ax.set_yticklabels(annual_data["EPS"][-10:],fontsize=17)
-      ax.set_xticks(range(len(annual_data["EPS"][-10:])))
-      ax.set_xticklabels(annual_data["EPS"][-10:].index,fontsize=17)
-      # Annotate each point with its corresponding y-value
-      for x, y in zip(range(len(annual_data["EPS"][-10:])), annual_data["EPS"][-10:]):
-          plt.annotate(f'{y}', (x, y),fontsize=20,textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
-
-      # Show plot using Streamlit
-      st.pyplot(fig)
+      Graph.plot_annual_financial_graph(annual_data,'EPS',-10)
       
   elif annual_graph_option == "5Y":
-      annual_data["EPS"] = annual_data["EPS"].astype(float)
-      
-      fig, ax = plt.subplots(figsize=(30, 10))
-      annual_data["EPS"][-5:].plot(ax=ax, color='brown')
-      plt.xticks(rotation=45)
-      plt.ylabel("EPS")
-      ax.set_xticks(range(len(annual_data["EPS"][-5:])))
-      ax.set_xticklabels(annual_data["EPS"][-5:].index)
-      # Annotate each point with its corresponding y-value
-      for x, y in zip(range(len(annual_data["EPS"][-5:])), annual_data["EPS"][-5:]):
-          plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
-
-      # Show plot using Streamlit
-      st.pyplot(fig)
+      Graph.plot_annual_financial_graph(annual_data,'EPS',-5)
       
   ### MAIN MENU - ANNUAL FINANCIAL DATA
 
   annual_data = annual_data[-10:]
   annual_data = annual_data.T[:-2]
+  
   fig = go.Figure(data=go.Table(
   header=dict(values= [""] + list( annual_data.columns),
               fill_color="#D7DBDD",
