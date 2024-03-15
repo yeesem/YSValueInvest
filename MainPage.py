@@ -22,7 +22,6 @@ from IncomeStatement import Income_Statement
 from dateutil.relativedelta import relativedelta
 from KLSEScraping import KLSE
 
-
 ###SIDEBAR
 st.sidebar.header("Menu")
 def menu():
@@ -54,7 +53,7 @@ full_name = stock_basic_info["full name"]
 company_sector = stock_basic_info["company sector"]
 company_website = stock_basic_info["company link"]
 
-@st.cache_data
+#@st.cache_data
 def shareholding_changes_table():
     shareholding_changes_table = klse.shareholding_changes_table()
     return shareholding_changes_table
@@ -68,7 +67,7 @@ space = "&nbsp;"
 
 ###MAIN PAGE
 if menu == 'Main Page':
-  
+ 
   #Method for timeline sidebar
   def timeline():
     
@@ -114,7 +113,7 @@ if menu == 'Main Page':
   
   ## MAIN MANU - PLOT ANNUAL FINANCIAL DATA
   st.write(
-  f'<div style="margin-bottom: 5px;">'
+  f'<div style="margin-bottom: 1px;">'
   f'<span style="font-weight: bold; font-size: 20px;">{"Annual Financial Data"}</span>'
   f'</div>',
   unsafe_allow_html=True)
@@ -122,20 +121,63 @@ if menu == 'Main Page':
   annual_data = annual_financial_data
   annual_data.index = annual_data.index.astype(str)
   
-  annual_data["EPS"] = annual_data["EPS"].astype(float)
+  annual_graph_option = st.radio(
+    label = "Test",
+    options = ("5Y","10Y","All"),
+    index = 1,
+    horizontal = True,
+    label_visibility="collapsed"
+  )
   
-  fig, ax = plt.subplots(figsize=(25, 8))
-  annual_data["EPS"].plot(ax=ax, color='brown')
-  plt.xticks(rotation=45)
-  plt.ylabel("EPS")
-  ax.set_xticks(range(len(annual_data)))
-  ax.set_xticklabels(annual_data.index)
-  # Annotate each point with its corresponding y-value
-  for x, y in zip(range(len(annual_data)), annual_data["EPS"]):
-      plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
+  if annual_graph_option == "All": 
+      annual_data["EPS"] = annual_data["EPS"].astype(float)
+      
+      fig, ax = plt.subplots(figsize=(30, 10))
+      annual_data["EPS"].plot(ax=ax, color='brown')
+      plt.xticks(rotation=45)
+      plt.ylabel("EPS")
+      ax.set_xticks(range(len(annual_data)))
+      ax.set_xticklabels(annual_data.index)
+      # Annotate each point with its corresponding y-value
+      for x, y in zip(range(len(annual_data)), annual_data["EPS"]):
+          plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
 
-  # Show plot using Streamlit
-  st.pyplot(fig)
+      # Show plot using Streamlit
+      st.pyplot(fig)
+  
+  elif annual_graph_option == "10Y":
+      annual_data["EPS"] = annual_data["EPS"].astype(float)
+      
+      fig, ax = plt.subplots(figsize=(30, 10))
+      annual_data["EPS"][-10:].plot(ax=ax, color='brown')
+      plt.xticks(rotation=45,fontsize=17)
+      plt.ylabel("EPS",fontsize=20)
+      plt.xlabel("Finacial Year",fontsize = 20)
+      ax.set_yticklabels(annual_data["EPS"][-10:],fontsize=17)
+      ax.set_xticks(range(len(annual_data["EPS"][-10:])))
+      ax.set_xticklabels(annual_data["EPS"][-10:].index,fontsize=17)
+      # Annotate each point with its corresponding y-value
+      for x, y in zip(range(len(annual_data["EPS"][-10:])), annual_data["EPS"][-10:]):
+          plt.annotate(f'{y}', (x, y),fontsize=20,textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
+
+      # Show plot using Streamlit
+      st.pyplot(fig)
+      
+  elif annual_graph_option == "5Y":
+      annual_data["EPS"] = annual_data["EPS"].astype(float)
+      
+      fig, ax = plt.subplots(figsize=(30, 10))
+      annual_data["EPS"][-5:].plot(ax=ax, color='brown')
+      plt.xticks(rotation=45)
+      plt.ylabel("EPS")
+      ax.set_xticks(range(len(annual_data["EPS"][-5:])))
+      ax.set_xticklabels(annual_data["EPS"][-5:].index)
+      # Annotate each point with its corresponding y-value
+      for x, y in zip(range(len(annual_data["EPS"][-5:])), annual_data["EPS"][-5:]):
+          plt.annotate(f'{y}', (x, y), textcoords="offset points", xytext=(0, 5), ha='center', va='bottom', rotation=20)
+
+      # Show plot using Streamlit
+      st.pyplot(fig)
       
   ### MAIN MENU - ANNUAL FINANCIAL DATA
 

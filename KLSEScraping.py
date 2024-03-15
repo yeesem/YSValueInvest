@@ -120,7 +120,9 @@ class KLSE:
 
         capital_changes_test = [item.split("\n") for item in capital_changes_data]
         capital_changes_test = [[item2 for item2 in item if (item2 != "" and item2!= "View")] for item in capital_changes_test]
-
+        
+        capital_changes_test = [item + [""] for item in capital_changes_test if len(item)!=5]
+        
         capital_changes_table = pd.DataFrame(capital_changes_test, columns = capital_changes_header)
 
         return capital_changes_table
