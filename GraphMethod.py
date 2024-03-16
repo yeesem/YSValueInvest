@@ -35,4 +35,13 @@ class Graph:
       
       # Show plot using Streamlit
       st.pyplot(fig)
+      
+    def DownloadCsv(dataframe,fileName):
+      return st.download_button(
+        "Download CSV",
+        dataframe.to_csv(),
+        file_name = fileName+".csv",
+        mime = "text/csv"
+      )
+      
     

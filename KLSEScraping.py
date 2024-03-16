@@ -207,8 +207,10 @@ class KLSE:
         ### ERROR
         df = pd.merge(df, dividend_summary, left_index=True, right_index=True)
         df = df.rename(columns = {'Amount' : 'Total Dividend Paid'})
+        
+        df["Net Margin"] = round((df["Net Profit"].str.replace(",","").astype(float)/df["Revenue"].str.replace(",","").astype(float))*100,2)
 
-        new_col_sequence = ["Revenue","Net Profit","EPS","DP %","Total Dividend Paid","Net Profit Y-o-Y Growth %","Annual Report Link"]
+        new_col_sequence = ["Revenue","Net Profit","Net Margin","EPS","DP %","Total Dividend Paid","Net Profit Y-o-Y Growth %","Annual Report Link"]
 
         df = df[new_col_sequence]
         df["Total Dividend Paid"] = round(df['Total Dividend Paid'],4)

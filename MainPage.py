@@ -68,7 +68,6 @@ space = "&nbsp;"
 
 ###MAIN PAGE
 if menu == 'Main Page':
- 
   #Method for timeline sidebar
   def timeline():
     
@@ -158,9 +157,15 @@ if menu == 'Main Page':
   
   # Show the Plotly figure using st.write()
   st.write(fig)
+  
+  # Download button for Annual Financial Data
+  Graph.DownloadCsv(annual_data,(short_name + "_Annual_Financial Data"))
 
   # MAIN MENU - Technical Chart
-  st.write("#### Technical Chart - ", stockName)
+  st.write(f'<div style="margin-top: 0px; margin-bottom: 10px;">'
+    f'<span style="font-weight: bold; font-size: 22px;">{"Technical Chart"}</span>'
+    f'</div>',
+    unsafe_allow_html=True)
   st.line_chart(historyPriceData.Close)
 
   st.session_state.ticker = ticker
